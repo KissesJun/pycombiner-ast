@@ -1,0 +1,497 @@
+
+C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner>python main.py tests\examples\deep_demo\main.py 
+demo-result.py
+
+=========================================
+[DEBUG] Basic Info: 
+[DEBUG] Source directory: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo
+[DEBUG] Entry file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+
+[DEBUG] Found 6 Python files:
+  - main.py
+  - models\user.py
+  - services\auth.py
+  - services\database.py
+  - utils\helpers\math_utils.py
+  - utils\helpers\string_utils.py
+
+=========================================
+[DEBUG] Component Analyzing: 
+
+[DEBUG] Analyzing imports:
+----------------------------------------
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+[DEBUG]    [Function definition]        def main()
+[DEBUG]    [Variable definition]        db
+[DEBUG]    [Variable definition]        user
+[DEBUG]    [Variable definition]        formatted_name
+[DEBUG]    [Variable definition]        result1
+[DEBUG]    [Variable definition]        result2
+[DEBUG]  [From-import statement]        from utils.helpers.math_utils import add
+[DEBUG]  [From-import statement]        from utils.helpers.math_utils import subtract
+[DEBUG]  [From-import statement]        from utils.helpers.string_utils import format_name
+[DEBUG]  [From-import statement]        from models.user import User
+[DEBUG]  [From-import statement]        from services.auth import login
+[DEBUG]  [From-import statement]        from services.auth import logout
+[DEBUG]  [From-import statement]        from services.database import connect_db
+
+[DEBUG] File: main.py
+  - ImportInfo(module='utils.helpers.math_utils', name='add', is_from_import=True, alias=None)
+  - ImportInfo(module='utils.helpers.math_utils', name='subtract', is_from_import=True, alias=None)
+  - ImportInfo(module='utils.helpers.string_utils', name='format_name', is_from_import=True, alias=None)     
+  - ImportInfo(module='models.user', name='User', is_from_import=True, alias=None)
+  - ImportInfo(module='services.auth', name='login', is_from_import=True, alias=None)
+  - ImportInfo(module='services.auth', name='logout', is_from_import=True, alias=None)
+  - ImportInfo(module='services.database', name='connect_db', is_from_import=True, alias=None)
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\models\user.py
+[DEBUG]       [Class definition]        class User
+[DEBUG]    [Function definition]        def __init__()
+[DEBUG]    [Function definition]        def __str__()
+[DEBUG]    [Function definition]        def to_dict()
+
+[DEBUG] File: models\user.py
+    - *Leaf Node | Nothing Imported
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] File: services\auth.py
+  - ImportInfo(module='models.user', name='User', is_from_import=True, alias=None)
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\database.py
+[DEBUG]       [Class definition]        class Database
+[DEBUG]    [Function definition]        def connect_db()
+[DEBUG]    [Function definition]        def __init__()
+[DEBUG]    [Function definition]        def connect()
+[DEBUG]    [Function definition]        def disconnect()
+[DEBUG]    [Variable definition]        db
+
+[DEBUG] File: services\database.py
+    - *Leaf Node | Nothing Imported
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
+[DEBUG]    [Function definition]        def add()
+[DEBUG]    [Function definition]        def subtract()
+[DEBUG]    [Function definition]        def multiply()
+[DEBUG]    [Function definition]        def divide()
+
+[DEBUG] File: utils\helpers\math_utils.py
+    - *Leaf Node | Nothing Imported
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\string_utils.py
+[DEBUG]    [Function definition]        def format_name()
+[DEBUG]    [Function definition]        def reverse_string()
+[DEBUG]    [Function definition]        def count_words()
+
+[DEBUG] File: utils\helpers\string_utils.py
+    - *Leaf Node | Nothing Imported
+
+=================================
+[DEBUG] Building dependency graph:
+----------------------------------------
+
+[DEBUG] Dependency graph:
+  main -> {'utils.helpers.math_utils', 'utils.helpers.string_utils', 'services.database', 'services.auth', 'models.user'}
+  models.user -> set()
+  services.auth -> {'models.user'}
+  services.database -> set()
+  utils.helpers.math_utils -> set()
+  utils.helpers.string_utils -> set()
+
+=================================
+
+
+[DEBUG] Starting file merge:
+----------------------------------------
+
+[DEBUG] Starting file merge process:
+----------------------------------------
+
+[DEBUG] Entry point: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+[DEBUG]    [Function definition]        def main()
+[DEBUG]    [Variable definition]        db
+[DEBUG]    [Variable definition]        user
+[DEBUG]    [Variable definition]        formatted_name
+[DEBUG]    [Variable definition]        result1
+[DEBUG]    [Variable definition]        result2
+[DEBUG]  [From-import statement]        from utils.helpers.math_utils import add
+[DEBUG]  [From-import statement]        from utils.helpers.math_utils import subtract
+[DEBUG]  [From-import statement]        from utils.helpers.string_utils import format_name
+[DEBUG]  [From-import statement]        from models.user import User
+[DEBUG]  [From-import statement]        from services.auth import login
+[DEBUG]  [From-import statement]        from services.auth import logout
+[DEBUG]  [From-import statement]        from services.database import connect_db
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\database.py
+[DEBUG]       [Class definition]        class Database
+[DEBUG]    [Function definition]        def connect_db()
+[DEBUG]    [Function definition]        def __init__()
+[DEBUG]    [Function definition]        def connect()
+[DEBUG]    [Function definition]        def disconnect()
+[DEBUG]    [Variable definition]        db
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\string_utils.py
+[DEBUG]    [Function definition]        def format_name()
+[DEBUG]    [Function definition]        def reverse_string()
+[DEBUG]    [Function definition]        def count_words()
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\models\user.py
+[DEBUG]       [Class definition]        class User
+[DEBUG]    [Function definition]        def __init__()
+[DEBUG]    [Function definition]        def __str__()
+[DEBUG]    [Function definition]        def to_dict()
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
+[DEBUG]    [Function definition]        def add()
+[DEBUG]    [Function definition]        def subtract()
+[DEBUG]    [Function definition]        def multiply()
+[DEBUG]    [Function definition]        def divide()
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Referenced files in order:
+  - C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+  - C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\database.py
+  - C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\string_utils.py
+  - C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\models\user.py     
+  - C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
+  - C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py   
+
+[DEBUG] Collecting module definitions and imports:
+----------------------------------------
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+[DEBUG]    [Function definition]        def main()
+[DEBUG]    [Variable definition]        db
+[DEBUG]    [Variable definition]        user
+[DEBUG]    [Variable definition]        formatted_name
+[DEBUG]    [Variable definition]        result1
+[DEBUG]    [Variable definition]        result2
+[DEBUG]  [From-import statement]        from utils.helpers.math_utils import add
+[DEBUG]  [From-import statement]        from utils.helpers.math_utils import subtract
+[DEBUG]  [From-import statement]        from utils.helpers.string_utils import format_name
+[DEBUG]  [From-import statement]        from models.user import User
+[DEBUG]  [From-import statement]        from services.auth import login
+[DEBUG]  [From-import statement]        from services.auth import logout
+[DEBUG]  [From-import statement]        from services.database import connect_db
+  - Found entry file content: 16 lines
+
+[DEBUG] Module main defines:
+  - formatted_name
+  - db
+  - result2
+  - result1
+  - user
+  - main
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\database.py
+[DEBUG]       [Class definition]        class Database
+[DEBUG]    [Function definition]        def connect_db()
+[DEBUG]    [Function definition]        def __init__()
+[DEBUG]    [Function definition]        def connect()
+[DEBUG]    [Function definition]        def disconnect()
+[DEBUG]    [Variable definition]        db
+
+[DEBUG] Module services.database defines:
+  - Database
+  - disconnect
+  - connect_db
+  - db
+  - connect
+  - __init__
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\string_utils.py
+[DEBUG]    [Function definition]        def format_name()
+[DEBUG]    [Function definition]        def reverse_string()
+[DEBUG]    [Function definition]        def count_words()
+
+[DEBUG] Module utils.helpers.string_utils defines:
+  - format_name
+  - count_words
+  - reverse_string
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\models\user.py
+[DEBUG]       [Class definition]        class User
+[DEBUG]    [Function definition]        def __init__()
+[DEBUG]    [Function definition]        def __str__()
+[DEBUG]    [Function definition]        def to_dict()
+
+[DEBUG] Module models.user defines:
+  - __str__
+  - to_dict
+  - User
+  - __init__
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
+[DEBUG]    [Function definition]        def add()
+[DEBUG]    [Function definition]        def subtract()
+[DEBUG]    [Function definition]        def multiply()
+[DEBUG]    [Function definition]        def divide()
+
+[DEBUG] Module utils.helpers.math_utils defines:
+  - subtract
+  - divide
+  - multiply
+  - add
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Module services.auth defines:
+  - logout
+  - is_authenticated
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+  - User
+  - __init__
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
+[DEBUG]    [Function definition]        def add()
+[DEBUG]    [Function definition]        def subtract()
+[DEBUG]    [Function definition]        def multiply()
+[DEBUG]    [Function definition]        def divide()
+
+[DEBUG] Module utils.helpers.math_utils defines:
+  - subtract
+  - divide
+  - multiply
+  - add
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Module services.auth defines:
+  - logout
+  - is_authenticated
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+  - __init__
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
+[DEBUG]    [Function definition]        def add()
+[DEBUG]    [Function definition]        def subtract()
+[DEBUG]    [Function definition]        def multiply()
+[DEBUG]    [Function definition]        def divide()
+
+[DEBUG] Module utils.helpers.math_utils defines:
+  - subtract
+  - divide
+  - multiply
+  - add
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Module services.auth defines:
+  - logout
+  - is_authenticated
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
+[DEBUG]    [Function definition]        def add()
+[DEBUG]    [Function definition]        def subtract()
+[DEBUG]    [Function definition]        def multiply()
+[DEBUG]    [Function definition]        def divide()
+
+[DEBUG] Module utils.helpers.math_utils defines:
+  - subtract
+  - divide
+  - multiply
+  - add
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Module services.auth defines:
+  - logout
+  - is_authenticated
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+[DEBUG]    [Function definition]        def multiply()
+[DEBUG]    [Function definition]        def divide()
+
+[DEBUG] Module utils.helpers.math_utils defines:
+  - subtract
+  - divide
+  - multiply
+  - add
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Module services.auth defines:
+  - logout
+  - is_authenticated
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+  - multiply
+  - add
+
+[DEBUG] Analyzing file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+[DEBUG]    [Function definition]        def login()
+[DEBUG]    [Function definition]        def logout()
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Module services.auth defines:
+  - logout
+  - is_authenticated
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+[DEBUG]    [Function definition]        def is_authenticated()
+[DEBUG]  [From-import statement]        from models.user import User
+
+[DEBUG] Module services.auth defines:
+  - logout
+  - is_authenticated
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+  - models.user
+  - services
+  - services.auth
+  - login
+
+[DEBUG] Local modules:
+  - main
+  - models
+  - models.user
+  - services
+  - services.auth
+  - services.database
+  - utils
+[DEBUG] Local modules:
+  - main
+  - models
+  - models.user
+  - services
+  - services.auth
+  - services.database
+  - utils
+  - utils.helpers
+  - utils.helpers.math_utils
+  - utils.helpers.string_utils
+  - models.user
+  - services
+  - services.auth
+  - services.database
+  - utils
+  - utils.helpers
+  - utils.helpers.math_utils
+  - utils.helpers.string_utils
+  - services.database
+  - utils
+  - utils.helpers
+  - utils.helpers.math_utils
+  - utils.helpers.string_utils
+
+[DEBUG] Processing imports:
+----------------------------------------
+  - utils.helpers
+  - utils.helpers.math_utils
+  - utils.helpers.string_utils
+
+[DEBUG] Processing imports:
+----------------------------------------
+  - Skipping ImportInfo(module='utils.helpers.math_utils', name='add', is_from_import=True, alias=None) (local module)
+
+[DEBUG] Processing imports:
+----------------------------------------
+  - Skipping ImportInfo(module='utils.helpers.math_utils', name='add', is_from_import=True, alias=None) (local module)
+[DEBUG] Processing imports:
+----------------------------------------
+  - Skipping ImportInfo(module='utils.helpers.math_utils', name='add', is_from_import=True, alias=None) (local module)
+  - Skipping ImportInfo(module='utils.helpers.math_utils', name='subtract', is_from_import=True, alias=None) 
+(local module)
+  - Skipping ImportInfo(module='utils.helpers.string_utils', name='format_name', is_from_import=True, alias=N  - Skipping ImportInfo(module='utils.helpers.math_utils', name='add', is_from_import=True, alias=None) (local module)
+  - Skipping ImportInfo(module='utils.helpers.math_utils', name='subtract', is_from_import=True, alias=None) 
+(local module)
+  - Skipping ImportInfo(module='utils.helpers.string_utils', name='format_name', is_from_import=True, alias=N  - Skipping ImportInfo(module='utils.helpers.math_utils', name='subtract', is_from_import=True, alias=None) 
+(local module)
+  - Skipping ImportInfo(module='utils.helpers.string_utils', name='format_name', is_from_import=True, alias=None) (local module)
+  - Skipping ImportInfo(module='models.user', name='User', is_from_import=True, alias=None) (local module)   
+one) (local module)
+  - Skipping ImportInfo(module='models.user', name='User', is_from_import=True, alias=None) (local module)   
+  - Skipping ImportInfo(module='services.auth', name='login', is_from_import=True, alias=None) (local module)  - Skipping ImportInfo(module='models.user', name='User', is_from_import=True, alias=None) (local module)   
+  - Skipping ImportInfo(module='services.auth', name='login', is_from_import=True, alias=None) (local module)  - Skipping ImportInfo(module='services.auth', name='logout', is_from_import=True, alias=None) (local module  - Skipping ImportInfo(module='services.auth', name='login', is_from_import=True, alias=None) (local module)  - Skipping ImportInfo(module='services.auth', name='logout', is_from_import=True, alias=None) (local module  - Skipping ImportInfo(module='services.auth', name='logout', is_from_import=True, alias=None) (local module)
+  - Skipping ImportInfo(module='services.database', name='connect_db', is_from_import=True, alias=None) (local module)
+l module)
+  - Skipping ImportInfo(module='models.user', name='User', is_from_import=True, alias=None) (local module)   
+
+[DEBUG] Processing file contents:
+----------------------------------------
+
+[DEBUG] Processing content from C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py:
+  - Skipping entry file content (will be handled separately)
+
+[DEBUG] Processing content from C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\database.py:
+  - Adding 23 lines of content
+
+[DEBUG] Processing content from C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\string_utils.py:
+  - Adding 17 lines of content
+
+[DEBUG] Processing content from C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\models\user.py:
+  - Adding 18 lines of content
+
+[DEBUG] Processing content from C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py:
+  - Adding 21 lines of content
+
+[DEBUG] Processing content from C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py:
+  - Skipping import line: from models.user import User
+  - Adding 19 lines of content
+
+[DEBUG] Adding entry file content:
+----------------------------------------
+  - Adding 16 lines from entry file
+
+[DEBUG] Writing output file:
+----------------------------------------
+  - Output written to C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\demo-result.py
+
+[DEBUG] Merge complete. Output written to C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\demo-result.py

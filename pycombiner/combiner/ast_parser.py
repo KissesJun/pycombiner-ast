@@ -15,7 +15,6 @@ class ImportInfo:
     name: str
     is_from_import: bool
     alias: Optional[str] = None
-
 def analyze_file(content: str, filepath: str) -> Tuple[List[ImportInfo], Set[str]]:
     """Analyze a Python file and return its imports and defined names"""
     imports = []
@@ -23,18 +22,19 @@ def analyze_file(content: str, filepath: str) -> Tuple[List[ImportInfo], Set[str
     
     try:
         tree = ast.parse(content)
+        print(f"\n[DEBUG] Analyzing file: {filepath}")
         
         # First pass: collect all defined names
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 defined_names.add(node.name)
-                print(f"[DEBUG] Found function definition: {node.name} in {filepath}")
+                print(f"[DEBUG]{('[Function definition]'):>25} \tdef {node.name}()")
             elif isinstance(node, ast.ClassDef):
                 defined_names.add(node.name)
-                print(f"[DEBUG] Found class definition: {node.name} in {filepath}")
+                print(f"[DEBUG]{('[Class definition]'):>25} \tclass {node.name}")
             elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
                 defined_names.add(node.id)
-                print(f"[DEBUG] Found variable definition: {node.id} in {filepath}")
+                print(f"[DEBUG]{('[Variable definition]'):>25} \t{node.id}")
         
         # Second pass: collect imports
         for node in ast.walk(tree):
@@ -47,7 +47,7 @@ def analyze_file(content: str, filepath: str) -> Tuple[List[ImportInfo], Set[str
                         alias=name.asname
                     )
                     imports.append(import_info)
-                    print(f"[DEBUG] Found import: {import_info} in {filepath}")
+                    print(f"[DEBUG]{'[Import statement]':>25} \timport {name.name}")
             elif isinstance(node, ast.ImportFrom):
                 module = node.module if node.module else ''
                 for name in node.names:
@@ -58,10 +58,9 @@ def analyze_file(content: str, filepath: str) -> Tuple[List[ImportInfo], Set[str
                         alias=name.asname
                     )
                     imports.append(import_info)
-                    print(f"[DEBUG] Found from-import: {import_info} in {filepath}")
+                    print(f"[DEBUG]{('[From-import statement]'):>25} \tfrom {module} import {name.name}")
     except SyntaxError as e:
         print(f"Warning: Syntax error in {filepath}: {e}")
-    
     return imports, defined_names
 
 def _resolve_module_to_filepath(module_name: str, project_files: List[str], input_dir: str) -> str | None:

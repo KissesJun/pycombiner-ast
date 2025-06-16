@@ -100,7 +100,7 @@ def merge_files(
         referenced_files.add(current_file)
         
         # Get imports from current file
-        abs_path = source_dir / current_file
+        abs_path = source_dir / current_file if not current_file.is_absolute() else current_file
         content = read_file(abs_path)
         if not content:
             continue
@@ -142,7 +142,7 @@ def merge_files(
     
     # First pass: collect all module definitions and imports
     for file_path in referenced_files:
-        abs_path = source_dir / file_path
+        abs_path = source_dir / file_path if not file_path.is_absolute() else file_path
         content = read_file(abs_path)
         if not content:
             continue
@@ -220,7 +220,7 @@ def merge_files(
     
     # Second pass: add file contents
     for file_path in referenced_files:
-        abs_path = source_dir / file_path
+        abs_path = source_dir / file_path if not file_path.is_absolute() else file_path
         content = read_file(abs_path)
         if not content:
             continue
