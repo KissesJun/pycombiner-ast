@@ -1,13 +1,29 @@
 {
     "version": "0.2.0",
-    "configurations": [
+        "configurations": [
+            
         {
-            "name": "Python: Current File",
+            "name": "Debug Unit Test: test_ast_parser.py",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "module": "unittest",
+            "args": [
+            "pycombiner/tests/test_ast_parser.py"
+            ],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
+        },
+    
+        {
+            "name": "deep_demo test",
+            "type": "python",
+            "request": "launch",
+            "program": "pycombiner",
+            "console": "integratedTerminal",
+            "args": [
+              "pycombiner/tests/examples/deep_demo/main.py",
+              "output.py"
+            ]
         }
     ]
 } 

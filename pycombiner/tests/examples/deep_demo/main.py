@@ -7,6 +7,8 @@ from utils.helpers.string_utils import format_name
 from models.user import User
 from services.auth import login, logout
 from services.database import connect_db
+import sys
+import os
 
 def main():
     # Initialize database
@@ -29,3 +31,4 @@ def main():
 
 if __name__ == "__main__":
     main() 
+    print(    os.curdir)

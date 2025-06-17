@@ -199,76 +199,44 @@ def merge_files(
             
         # Format the import statement
         if imp.is_from_import:
-            import_stmt = f"from {imp.module} import {imp.name}"
-            if imp.alias:
-                import_stmt += f" as {imp.alias}"
+            if imp.name == '*':
+                import_stmt = f"from {imp.module} import *"
+            else:
+                import_stmt = f"from {imp.module} import {imp.name}"
         else:
             import_stmt = f"import {imp.module}"
-            if imp.alias:
-                import_stmt += f" as {imp.alias}"
-                
+            
         if import_stmt not in processed_imports:
-            print(f"  - Adding import: {import_stmt}")
-            merged_content.append(import_stmt)
             processed_imports.add(import_stmt)
+            merged_content.append(import_stmt)
     
     # Add a blank line after imports
-    merged_content.append('')
+    if merged_content:
+        merged_content.append('')
     
-    print("\n[DEBUG] Processing file contents:")
-    print("----------------------------------------")
-    
-    # Second pass: add file contents
+    # Second pass: write file contents
     for file_path in referenced_files:
         abs_path = source_dir / file_path if not file_path.is_absolute() else file_path
         content = read_file(abs_path)
         if not content:
             continue
             
-        print(f"\n[DEBUG] Processing content from {file_path}:")
+        # Write file header
+        merged_content.append(f"\n#{'='*80}")
+        merged_content.append(f"# File: {file_path}")
+        merged_content.append(f"#{'='*80}\n")
         
-        # Skip entry file as it will be handled separately
-        if file_path == entry_file:
-            print(f"  - Skipping entry file content (will be handled separately)")
-            continue
-        
-        # Add file header
-        relative_path = abs_path.relative_to(source_dir)
-        merged_content.append(f"# --- Content from: {relative_path} ---")
-        
-        # Process file content
+        # Write non-import statements
         lines = content.split('\n')
-        file_content = []
+        in_import_section = True
         for line in lines:
-            # Skip import statements
-            if line.strip().startswith(('import ', 'from ')):
-                print(f"  - Skipping import line: {line.strip()}")
-                continue
-            # Skip main function and if __name__ block
-            if line.strip().startswith('def main()') or line.strip().startswith('if __name__'):
-                print(f"  - Skipping: {line.strip()}")
-                continue
-            file_content.append(line)
-        
-        # Add file content
-        if file_content:
-            print(f"  - Adding {len(file_content)} lines of content")
-            merged_content.extend(file_content)
-            merged_content.append('')  # Add blank line between files
+            stripped = line.strip()
+            if in_import_section and not (stripped.startswith('import ') or stripped.startswith('from ')):
+                in_import_section = False
+            if not in_import_section:
+                merged_content.append(line)
     
-    print("\n[DEBUG] Adding entry file content:")
-    print("----------------------------------------")
-    
-    # Add entry file content at the end
-    if main_py_content:
-        merged_content.append('')  # Add blank line before entry file content
-        print(f"  - Adding {len(main_py_content)} lines from entry file")
-        merged_content.extend(main_py_content)
-    
-    print("\n[DEBUG] Writing output file:")
-    print("----------------------------------------")
-    
-    # Write merged content to output file
+    # Write the merged content to the output file
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write('\n'.join(merged_content))
     print(f"  - Output written to {output_file}")
