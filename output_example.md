@@ -31,8 +31,8 @@ Output File      : demo-result-20250607-140328.py
 │   │   └── auth.py:        → database
 │   ├── utils/helpers/
 │   │   └── math_utils.py:  → string_utils
-│   └── main.py[7]:         → database, auth {comment: Abstractal}
-│       - from utils.helpers.math_utils   import add, subtract  {comment: Detail}
+│   └── main.py[7]:         → database, auth 
+│       - from utils.helpers.math_utils   import add, subtract 
 │       - from utils.helpers.string_utils import format_name
 │       - from models.user                import User
 │       - from services.auth              import login, logout

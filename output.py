@@ -2,47 +2,20 @@
 # Entry file: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
 # Source directory: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo
 
-
-import models.user
+import date
 import os
 import pathlib
 import re
-import services.auth
-import services.database
 import sys
-import utils.helpers.math_utils
-import utils.helpers.string_utils
 
 
 #================================================================================
-# File: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\database.py
+# [1] math_utils.py : C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
 #================================================================================
 
-class Database:
-
-    def __init__(self):
-        self.connected = False
-
-    def connect(self):
-        """Connect to the database"""
-        self.connected = True
-        print('Connected to database')
-
-    def disconnect(self):
-        """Disconnect from the database"""
-        self.connected = False
-        print('Disconnected from database')
-
-def connect_db() -> Database:
-    """Create and connect to a database"""
-    db = Database()
-    db.connect()
-    return db
-
-
-#================================================================================
-# File: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\math_utils.py
-#================================================================================
+"""
+Math utility functions
+"""
 
 def add(a: int, b: int) -> int:
     """Add two numbers"""
@@ -59,31 +32,16 @@ def multiply(a: int, b: int) -> int:
 def divide(a: int, b: int) -> float:
     """Divide a by b"""
     if b == 0:
-        raise ValueError('Cannot divide by zero')
-    return a / b
-
-
-#================================================================================
-# File: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\models\user.py
-#================================================================================
-
-class User:
-
-    def __init__(self, name: str):
-        self.name = name
-        self.is_logged_in = False
-
-    def __str__(self) -> str:
-        return f'User({self.name})'
-
-    def to_dict(self) -> dict:
-        """Convert user to dictionary"""
-        return {'name': self.name, 'is_logged_in': self.is_logged_in}
-
+        raise ValueError("Cannot divide by zero")
+    return a / b 
 
 #================================================================================
-# File: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\string_utils.py
+# [2] string_utils.py : C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\utils\helpers\string_utils.py
 #================================================================================
+
+"""
+String utility functions
+"""
 
 def format_name(name: str) -> str:
     """Format a name with proper capitalization"""
@@ -95,45 +53,122 @@ def reverse_string(text: str) -> str:
 
 def count_words(text: str) -> int:
     """Count the number of words in a string"""
-    return len(text.split())
+    return len(text.split()) 
 
+print("Import Successfully")
 
 #================================================================================
-# File: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+# [3] user.py : C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\models\user.py
 #================================================================================
+
+"""
+User model
+"""
+
+class User:
+    def __init__(self, name: str):
+        self.name = name
+        self.is_logged_in = False
+    
+    def __str__(self) -> str:
+        return f"User({self.name})"
+    
+    def to_dict(self) -> dict:
+        """Convert user to dictionary"""
+        return {
+            "name": self.name,
+            "is_logged_in": self.is_logged_in
+        } 
+
+#================================================================================
+# [4] auth.py : C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\auth.py
+#================================================================================
+
+"""
+Authentication service
+"""
+import re
+import pathlib
 
 def login(user: User) -> None:
     """Log in a user"""
     user.is_logged_in = True
-    res = re.match('2(\\d)4', '333254')
-    print(f'User {user.name} logged in')
+    res = re.match(r'2(\d)4', "333254")
+    print(f"User {user.name} logged in")
 
 def logout(user: User) -> None:
     """Log out a user"""
     user.is_logged_in = False
-    print(f'User {user.name} logged out')
+    print(f"User {user.name} logged out")
 
 def is_authenticated(user: User) -> bool:
     """Check if a user is authenticated"""
-    return user.is_logged_in
-
+    return user.is_logged_in 
 
 #================================================================================
-# File: C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+# [5] database.py : C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\services\database.py
 #================================================================================
+
+"""
+Database service
+"""
+import os
+
+class Database:
+    def __init__(self):
+        self.connected = False
+    
+    def connect(self):
+        """Connect to the database"""
+        self.connected = True
+        print("Connected to database")
+    
+    def disconnect(self):
+        """Disconnect from the database"""
+        self.connected = False
+        print("Disconnected from database")
+
+def connect_db() -> Database:
+    """Create and connect to a database"""
+    db = Database()
+    db.connect()
+    return db 
+
+#================================================================================
+# [6] main.py : C:\Users\PFS\Documents\Codes\proface-sys-homepage\pycombiner\tests\examples\deep_demo\main.py
+#================================================================================
+
+"""
+Main entry point for the deep demo
+"""
+import sys
+import os
+import date
+
+s = "successfull"
+
+print(s)
+print(s)
 
 def main():
+    # Initialize database
     db = connect_db()
-    user = User('John Doe')
+    
+    # Create a user
+    user = User("John Doe")
     formatted_name = format_name(user.name)
+    
+    # Perform some calculations
     result1 = add(10, 5)
     result2 = subtract(10, 5)
+    
+    # Login and logout
     login(user)
     logout(user)
-    print(f'Results: {result1}, {result2}')
-    print(f'Formatted name: {formatted_name}')
+    
+    print(f"Results: {result1}, {result2}")
+    print(f"Formatted name: {formatted_name}")
 
-if __name__ == '__main__':
-    main()
-    print(os.curdir)
-
+if __name__ == "__main__":
+    main() 
+    print(    os.curdir)

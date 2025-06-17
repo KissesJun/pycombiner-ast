@@ -9,6 +9,12 @@ from services.auth import login, logout
 from services.database import connect_db
 import sys
 import os
+import date
+
+s = "successfull"
+
+print(s)
+print(s)
 
 def main():
     # Initialize database

@@ -4,7 +4,6 @@ Command-line interface for PyCombiner
 import argparse
 from pathlib import Path
 import sys
-import os
 
 # Add the project root directory to Python path
 project_root = str(Path(__file__).parent.parent)

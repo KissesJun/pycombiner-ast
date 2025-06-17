@@ -39,13 +39,15 @@ class MergeReport:
         if self.debug:
             print(f"{Colors.YELLOW}[DEBUG]{Colors.RESET} {message}")
 
-    def add_file_info(self, file_path: Path, lines: int, imports: Set[str], unhandled_imports: Set[str]):
+    def add_file_info(self, file_path: Path, lines: int, imports: Set[str], unhandled_imports: Set[str], import_info: Dict = None):
         """Add information about a processed file"""
         self.files_info.append({
             'path': file_path,
             'lines': lines,
             'imports': imports,
-            'unhandled_imports': unhandled_imports
+            'unhandled_imports': unhandled_imports,
+            'import_statements': import_info.get('import_statements', []) if import_info else [],
+            'unhandled_import_statements': import_info.get('unhandled_import_statements', []) if import_info else []
         })
         self.stats['total_lines'] += lines
         self.debug_print(f"Added file info: {file_path} ({lines} lines)")
@@ -169,40 +171,50 @@ class MergeReport:
         project_root = self._get_project_root()
         handled_imports[project_root.name] = {}  # Add project root directory
         
-        for file, imports in self.imports_by_file.items():
-            file_path = Path(file)
-            # Get the path relative to project root
-            try:
-                rel_path = file_path.relative_to(project_root)
-            except ValueError:
-                rel_path = file_path
-            
-            parts = rel_path.parts
-            current = handled_imports[project_root.name]  # Start from project root
-            for i, part in enumerate(parts):
-                if i == len(parts) - 1:  # File
-                    current[part] = imports
-                else:  # Directory
-                    if part not in current:
-                        current[part] = {}
-                    current = current[part]
+        # 收集所有已处理的导入信息
+        for info in self.files_info:
+            if info['imports']:
+                path = info['path']
+                try:
+                    rel_path = path.relative_to(project_root)
+                except ValueError:
+                    rel_path = path
+                
+                parts = rel_path.parts
+                current = handled_imports[project_root.name]
+                for i, part in enumerate(parts):
+                    if i == len(parts) - 1:  # File
+                        current[part] = {
+                            'imports': info['imports'],
+                            'order': self._get_file_order(path),
+                            'import_statements': info.get('import_statements', [])  # 存储原始导入语句
+                        }
+                    else:  # Directory
+                        if part not in current:
+                            current[part] = {}
+                        current = current[part]
 
         def format_handled_imports(tree: Dict, prefix: str = "") -> List[str]:
             result = []
             items = sorted(tree.items())
             for i, (name, value) in enumerate(items):
                 is_last = i == len(items) - 1
-                if isinstance(value, dict):  # Directory
+                if isinstance(value, dict) and 'imports' not in value:  # Directory
                     result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}/")
                     new_prefix = prefix + ("    " if is_last else "│   ")
                     result.extend(format_handled_imports(value, new_prefix))
                 else:  # File
-                    order = self._get_file_order(Path(name))
+                    order = value.get('order', 0)
                     order_str = f"[{order}]" if order > 0 else ""
-                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}{order_str}:")
-                    if self.show_details:
-                        for imp in value:
-                            result.append(f"{prefix}{'    ' if is_last else '│   '}    - {imp}")
+                    imports = value.get('imports', set())
+                    imports_str = ", ".join(sorted(imports))
+                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}{order_str}: {imports_str}")
+                    # 显示完整的导入语句
+                    import_statements = value.get('import_statements', [])
+                    for imp in sorted(import_statements):
+                        # 计算缩进，使导入语句在中间对齐
+                        indent = prefix + ("    " if is_last else "│   ")
+                        result.append(f"{indent}    - {imp}")
             return result
 
         lines.extend(format_handled_imports(handled_imports))
@@ -211,22 +223,24 @@ class MergeReport:
         lines.append("")
         lines.append("└── ⚠️ Unhandled Imports")
         unhandled_imports = {}
-        unhandled_imports[project_root.name] = {}  # Add project root directory
+        unhandled_imports[project_root.name] = {}
         
         for info in self.files_info:
             if info['unhandled_imports']:
                 path = info['path']
-                # Get the path relative to project root
                 try:
                     rel_path = path.relative_to(project_root)
                 except ValueError:
                     rel_path = path
                 
                 parts = rel_path.parts
-                current = unhandled_imports[project_root.name]  # Start from project root
+                current = unhandled_imports[project_root.name]
                 for i, part in enumerate(parts):
                     if i == len(parts) - 1:  # File
-                        current[part] = info['unhandled_imports']
+                        current[part] = {
+                            'imports': info['unhandled_imports'],
+                            'import_statements': info.get('unhandled_import_statements', [])  # 存储原始导入语句
+                        }
                     else:  # Directory
                         if part not in current:
                             current[part] = {}
@@ -237,14 +251,22 @@ class MergeReport:
             items = sorted(tree.items())
             for i, (name, value) in enumerate(items):
                 is_last = i == len(items) - 1
-                if isinstance(value, dict):  # Directory
+                if isinstance(value, dict) and 'imports' not in value:  # Directory
                     result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}/")
                     new_prefix = prefix + ("    " if is_last else "│   ")
                     result.extend(format_unhandled_imports(value, new_prefix))
                 else:  # File
-                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}:")
-                    imports_str = ", ".join(sorted(value))
-                    result.append(f"{prefix}{'    ' if is_last else '│   '}    → {imports_str}")
+                    imports = value.get('imports', set())
+                    # 去掉 "import " 前缀
+                    clean_imports = {imp.replace('import ', '') for imp in imports}
+                    imports_str = ", ".join(sorted(clean_imports))
+                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}: {imports_str}")
+                    # 显示完整的导入语句
+                    import_statements = value.get('import_statements', [])
+                    for imp in sorted(import_statements):
+                        # 计算缩进，使导入语句在中间对齐
+                        indent = prefix + ("    " if is_last else "│   ")
+                        result.append(f"{indent}    - {imp}")
             return result
 
         lines.extend(format_unhandled_imports(unhandled_imports))
