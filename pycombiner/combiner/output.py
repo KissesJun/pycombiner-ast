@@ -13,7 +13,7 @@ class MergeReport:
         self.output_file = output_file
         self.start_time = time.time()
         self.files_info: List[Dict] = []
-        self.imports_by_file: Dict[str, Set[str]] = {}
+        self.imports_by_file: Dict[str, List[str]] = {}
         self.dependency_graph: Dict[str, Set[str]] = {}
         self.merge_order: List[Path] = []
         self.stats = {
@@ -47,87 +47,177 @@ class MergeReport:
         """Update statistics"""
         self.stats.update(stats)
 
-    def format_report(self) -> str:
-        """Format the merge report"""
-        width = 80
-        separator = "═" * width
-        
-        # Header
-        report = [
-            f"{separator} 🔍 PyCombiner Merge Report v1.2.0 {separator}",
-            f"\nGenerated On     : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-            f"Entry File       : {self.entry_file.relative_to(self.source_dir)}",
-            f"Source Directory : {self.source_dir}",
-            f"Output File      : {self.output_file.name}\n"
-        ]
+    def _get_file_order(self, file_path: Path) -> int:
+        """Get the order number of a file in the merge order"""
+        try:
+            return self.merge_order.index(file_path) + 1
+        except ValueError:
+            return 0
 
-        # Files Discovered
-        report.append(f"📦 Files Discovered ({len(self.files_info)})")
-        report.append("─" * width)
-        report.append(f" #  {'File':<45} {'Lines':<8} Internal Imports")
-        report.append("─" * width)
+    def _format_import_summary(self) -> List[str]:
+        """Format the import handling summary section"""
+        lines = []
+        lines.append("📦 Import Handling Summary")
+        lines.append("─" * 100)
+        lines.append(f"{'':<40} {'Lines':<10} | {'Unhandled':<10} | {'Handled':<10}")
+        lines.append("─" * 100)
+
+        # Build directory tree for files
+        tree = {}
+        for info in self.files_info:
+            path = info['path']
+            parts = path.parts
+            current = tree
+            for i, part in enumerate(parts):
+                if i == len(parts) - 1:  # File
+                    current[part] = info
+                else:  # Directory
+                    if part not in current:
+                        current[part] = {}
+                    current = current[part]
+
+        def format_tree(tree: Dict, prefix: str = "", is_last: bool = True) -> List[str]:
+            result = []
+            items = sorted(tree.items())
+            for i, (name, value) in enumerate(items):
+                is_last_item = i == len(items) - 1
+                if isinstance(value, dict) and not any(key in value for key in ['path', 'lines', 'imports', 'unhandled_imports']):  # Directory
+                    result.append(f"{prefix}{'└── ' if is_last_item else '├── '}{name}/")
+                    new_prefix = prefix + ("    " if is_last_item else "│   ")
+                    result.extend(format_tree(value, new_prefix, is_last_item))
+                else:  # File
+                    info = value
+                    if isinstance(info, dict) and 'path' in info:
+                        order = self._get_file_order(info['path'])
+                        order_str = f"[{order}] " if order > 0 else ""
+                        is_entry = info['path'] == self.entry_file
+                        entry_mark = " 🚩 entry file" if is_entry else ""
+                        result.append(
+                            f"{prefix}{'└── ' if is_last_item else '├── '}{order_str}{name}{entry_mark:<15} "
+                            f"→ {info['lines']:<6} {len(info['unhandled_imports']):<10} {len(info['imports']):<10}"
+                        )
+            return result
+
+        lines.extend(format_tree(tree))
+        lines.append("─" * 100)
         
-        for i, info in enumerate(self.files_info, 1):
-            file_path = info['path'].relative_to(self.source_dir)
-            report.append(f" {i:<2} {str(file_path):<45} {info['lines']:<8} {len(info['imports'])}")
+        # Add totals
+        total_lines = sum(info['lines'] for info in self.files_info)
+        total_unhandled = sum(len(info['unhandled_imports']) for info in self.files_info)
+        total_handled = sum(len(info['imports']) for info in self.files_info)
+        lines.append(f"{'*[]indicates Importing Order':<40} Total {total_lines:<6} | {total_unhandled:<6} | {total_handled:<6}")
+        lines.append("")
+        return lines
+
+    def _format_import_details(self) -> List[str]:
+        """Format the import handling details section"""
+        lines = []
+        lines.append("📦 Import Handling Details")
+        lines.append("─" * 100)
+
+        # Format handled imports
+        lines.append("├── ✅ Handled Imports")
+        handled_imports = {}
+        for file, imports in self.imports_by_file.items():
+            file_path = Path(file)
+            parts = file_path.parts
+            current = handled_imports
+            for i, part in enumerate(parts):
+                if i == len(parts) - 1:  # File
+                    current[part] = imports
+                else:  # Directory
+                    if part not in current:
+                        current[part] = {}
+                    current = current[part]
+
+        def format_handled_imports(tree: Dict, prefix: str = "") -> List[str]:
+            result = []
+            items = sorted(tree.items())
+            for i, (name, value) in enumerate(items):
+                is_last = i == len(items) - 1
+                if isinstance(value, dict):  # Directory
+                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}/")
+                    new_prefix = prefix + ("    " if is_last else "│   ")
+                    result.extend(format_handled_imports(value, new_prefix))
+                else:  # File
+                    order = self._get_file_order(Path(name))
+                    order_str = f"[{order}]" if order > 0 else ""
+                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}{order_str}:")
+                    for imp in value:
+                        result.append(f"{prefix}{'    ' if is_last else '│   '}    - {imp}")
+            return result
+
+        lines.extend(format_handled_imports(handled_imports))
+
+        # Format unhandled imports
+        lines.append("")
+        lines.append("└── ⚠️ Unhandled Imports")
+        unhandled_imports = {}
+        for info in self.files_info:
             if info['unhandled_imports']:
-                report.append(f"    └─ Unhandled imports: {', '.join(info['unhandled_imports'])}")
-        
-        report.append("─" * width)
-        report.append(f" Total Lines: {self.stats['total_lines']}   |   "
-                     f"Functions/Methods: {self.stats['functions']}   |   "
-                     f"Classes: {self.stats['classes']}\n")
+                path = info['path']
+                parts = path.parts
+                current = unhandled_imports
+                for i, part in enumerate(parts):
+                    if i == len(parts) - 1:  # File
+                        current[part] = info['unhandled_imports']
+                    else:  # Directory
+                        if part not in current:
+                            current[part] = {}
+                        current = current[part]
 
-        # Imports in Entry File
-        report.append("📚 Imports in Entry File (main.py)")
-        report.append("─" * width)
-        for imp in self.imports_by_file.get(str(self.entry_file), []):
-            report.append(imp)
+        def format_unhandled_imports(tree: Dict, prefix: str = "") -> List[str]:
+            result = []
+            items = sorted(tree.items())
+            for i, (name, value) in enumerate(items):
+                is_last = i == len(items) - 1
+                if isinstance(value, dict):  # Directory
+                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}/")
+                    new_prefix = prefix + ("    " if is_last else "│   ")
+                    result.extend(format_unhandled_imports(value, new_prefix))
+                else:  # File
+                    result.append(f"{prefix}{'└── ' if is_last else '├── '}{name}:")
+                    imports_str = ", ".join(sorted(value))
+                    result.append(f"{prefix}{'    ' if is_last else '│   '}    → {imports_str}")
+            return result
+
+        lines.extend(format_unhandled_imports(unhandled_imports))
+        lines.append("─" * 100)
+        lines.append("")
+        return lines
+
+    def format_report(self) -> str:
+        """Format the report as a string."""
+        report = []
+        report.append("══════════════════════════ 🔍 PyCombiner Merge Report ══════════════════════════")
+        report.append("")
+        report.append(f"Generated On     : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        report.append(f"Entry File       : {self.entry_file}")
+        report.append(f"Source Directory : {self.source_dir}")
+        report.append(f"Output File      : {self.output_file}")
         report.append("")
 
-        # Dependency Tree
-        report.append("📈 Dependency Tree")
-        report.append("─" * width)
-        self._format_dependency_tree(report, str(self.entry_file), 0)
-        report.append("")
+        # Add import summary
+        report.extend(self._format_import_summary())
 
-        # Merge Order
-        report.append("🧩 Merge Order (Topological Sort)")
-        report.append("─" * width)
-        for i, file in enumerate(self.merge_order, 1):
-            is_entry = file == self.entry_file
-            report.append(f" {i:<2}. {file.relative_to(self.source_dir)}"
-                        f"{' ← entry file is merged last' if is_entry else ''}")
-        report.append("")
+        # Add import details
+        report.extend(self._format_import_details())
 
-        # Summary
-        elapsed_time = time.time() - self.start_time
+        # Add summary
         report.append("⚙️ Summary")
-        report.append("─" * width)
+        report.append("─" * 100)
         report.append(f" • Total import statements analyzed…… {self.stats['total_imports']}")
-        report.append(f" • Dependency graph built……………… {len(self.dependency_graph)} nodes / "
-                     f"{sum(len(deps) for deps in self.dependency_graph.values())} edges")
+        report.append(f" • Dependency graph built……………… {len(self.dependency_graph)} nodes / {sum(len(deps) for deps in self.dependency_graph.values())} edges")
         report.append(f" • Duplicate local imports skipped…… {self.stats['duplicate_imports']}")
-        report.append(f" • Lines written to merged output…… {self.stats['total_lines']} → {self.output_file.name}")
+        report.append(f" • Lines written to merged output…… {self.stats['functions'] + self.stats['classes']} → {self.output_file}")
         report.append(f" • Redundant imports removed………… {self.stats['redundant_imports']}")
-        report.append(f" • Total time elapsed………………… {elapsed_time:.2f} s\n")
-
-        # Footer
-        report.append(f"✅ Merge complete! Output saved to: {self.output_file.name}")
-        report.append(f"   You can now run:  python {self.output_file.name}")
-
-        return "\n".join(report)
-
-    def _format_dependency_tree(self, report: List[str], node: str, depth: int):
-        """Format the dependency tree recursively"""
-        indent = "│  " * depth
-        if depth == 0:
-            report.append(f"{Path(node).name}")
-        else:
-            report.append(f"{indent}└─ {Path(node).name}")
+        report.append(f" • Total time elapsed………………… {self.stats['total_time']:.2f} s")
+        report.append("")
         
-        for dep in sorted(self.dependency_graph.get(node, [])):
-            self._format_dependency_tree(report, dep, depth + 1)
+        report.append(f"✅ Merge complete! Output saved to: {self.output_file}")
+        report.append(f"   You can now run:  python {self.output_file}")
+        report.append("")
+        return "\n".join(report)
 
 def print_merge_report(report: MergeReport):
     """Print the merge report to console"""
