@@ -16,3 +16,6 @@ class User:
             "name": self.name,
             "is_logged_in": self.is_logged_in
         } 
+
+if __name__ == "__main__":
+    User() 

@@ -1,6 +1,6 @@
 import unittest
 from pathlib import Path
-from ..combiner.output import MergeReport, print_merge_report
+from pycombiner.combiner.output import MergeReport, print_merge_report
 
 class TestOutput(unittest.TestCase):
     def test_print_merge_report(self):
